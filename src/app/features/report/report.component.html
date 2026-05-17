@@ -1,0 +1,129 @@
+<m-container>
+
+  <m-main-menu
+    [menuitems]="['Submit Report', 'AI Result']"
+    (menuclick)="onMenuClick($event)">
+  </m-main-menu>
+
+  <!--  SUBMIT REPORT TAB  -->
+  @if (activeTab === 'Submit Report') {
+
+    <h3>Submit a Safety Report</h3>
+
+    <!-- GPS Location  -->
+    <div class="location-box">
+      <strong> Your Current Location</strong>
+      @if (!locationReady && !locationError) {
+        <p style="color: #888;">Detecting GPS coordinates…</p>
+      }
+      @if (locationReady) {
+        <p style="color: green;">
+          Lat: {{ lat.toFixed(5) }} &nbsp;|&nbsp; Lng: {{ lng.toFixed(5) }}
+        </p>
+      }
+      @if (locationError) {
+        <p style="color: red;">{{ locationError }}</p>
+        <button class="pure-button" style="width:auto;" (click)="detectLocation()">Retry GPS</button>
+      }
+    </div>
+
+    <!-- Report Form -->
+    <form class="pure-form pure-form-stacked">
+      <fieldset>
+
+        <div class="form-group">
+          <label>Hazard Category *</label>
+          <select class="pure-input-1" [(ngModel)]="category" name="category">
+            <option value="">— Select a category —</option>
+            <option value="Poorly Lit Street">Poorly Lit Street</option>
+            <option value="Damaged Infrastructure">Damaged Infrastructure</option>
+            <option value="Security Concern">Security Concern</option>
+            <option value="Environmental Hazard">Environmental Hazard</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Severity Level *</label>
+          <select class="pure-input-1" [(ngModel)]="severity" name="severity">
+            <option value="">— Select severity —</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Description *</label>
+          <textarea
+            class="pure-input-1"
+            [(ngModel)]="description"
+            name="description"
+            rows="4"
+            maxlength="500"
+            placeholder="Describe the hazard clearly. The more detail you provide, the better the AI analysis.">
+          </textarea>
+          <small>{{ description.length }} / 500 characters</small>
+        </div>
+
+        @if (submitError !== '') {
+          <m-aha type="error" header="Submission Error">
+            {{ submitError }}
+          </m-aha>
+        }
+
+        <button
+          type="button"
+          class="pure-button pure-button-primary"
+          style="background: rgb(12,35,64); color: white;"
+          (click)="submitReport()"
+          [disabled]="!canSubmit || submitting">
+          @if (submitting) { Analysing with Gemini AI… }
+          @else { Submit Report + AI Analysis }
+        </button>
+
+      </fieldset>
+    </form>
+  }
+
+  <!-- AI RESULT TAB  -->
+  @if (activeTab === 'AI Result') {
+
+    @if (!submitted) {
+      <m-aha type="normal" header="No Report Yet">
+        Submit a report first — the Gemini AI analysis will appear here.
+      </m-aha>
+    }
+
+    @if (submitted && submitting) {
+      <m-aha type="normal" header="Gemini is Thinking…">
+        Please wait while AI classifies your hazard report.
+      </m-aha>
+    }
+
+    @if (submitted && !submitting && geminiResult) {
+
+      <m-result-box label="✓ Report Submitted" class="success">
+        Your report is now live on the map and visible to all users.
+      </m-result-box>
+
+      <h3>Gemini AI Analysis</h3>
+
+      <m-result-box label="Hazard Classification" class="normal">
+        {{ geminiResult.classification }}
+      </m-result-box>
+
+      <m-result-box label="Authority to Notify" class="warning">
+        {{ geminiResult.authority }}
+      </m-result-box>
+
+      <m-result-box label="Recommended Action" class="success">
+        {{ geminiResult.action }}
+      </m-result-box>
+
+      <button class="pure-button pure-button-primary" (click)="resetForm()">
+        Submit Another Report
+      </button>
+    }
+  }
+
+</m-container>

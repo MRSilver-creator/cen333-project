@@ -1,0 +1,83 @@
+h3 {
+  color: rgb(12, 35, 64);
+  border-bottom: 2px solid rgb(238, 39, 55);
+  padding-bottom: 0.4em;
+  margin-top: 1.2em;
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  border: 2px solid rgb(12, 35, 64);
+  padding: 1.5em;
+  margin-bottom: 1.5em;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgb(12, 35, 64);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.profile-info h2 {
+  margin: 0 0 4px;
+  color: rgb(12, 35, 64);
+  font-size: 1.4em;
+}
+
+.profile-info p {
+  margin: 0;
+  color: #666;
+  font-size: 0.95em;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1em;
+  margin-bottom: 1.5em;
+}
+
+.stat-card {
+  border: 2px solid rgb(12, 35, 64);
+  padding: 1.2em;
+  text-align: center;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 2.2em;
+  color: rgb(12, 35, 64);
+  line-height: 1;
+  margin-bottom: 0.2em;
+}
+
+.stat-card span {
+  font-size: 0.8em;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card-green strong {
+  color: rgb(238, 39, 55);
+}
+
+@media (max-width: 700px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .profile-card { flex-direction: column; text-align: center; }
+}

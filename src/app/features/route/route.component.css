@@ -1,0 +1,45 @@
+h3 {
+  color: rgb(12, 35, 64);
+  border-bottom: 2px solid rgb(238, 39, 55);
+  padding-bottom: 0.4em;
+  margin-top: 1.2em;
+}
+
+.location-box {
+  border: 2px solid rgb(12, 35, 64);
+  padding: 1em;
+  margin-bottom: 1.2em;
+  background: #f9f9f9;
+}
+
+.location-box strong {
+  display: block;
+  color: rgb(12, 35, 64);
+  margin-bottom: 0.4em;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+  margin-bottom: 1.2em;
+}
+
+.form-group label {
+  font-weight: bold;
+  color: rgb(12, 35, 64);
+}
+
+.form-group input {
+  padding: 0.6em 0.8em;
+  border: 2px solid rgb(12, 35, 64);
+  font-size: 1em;
+  width: 100%;
+}
+
+.route-actions {
+  display: flex;
+  gap: 1em;
+  margin-top: 1.5em;
+  flex-wrap: wrap;
+}

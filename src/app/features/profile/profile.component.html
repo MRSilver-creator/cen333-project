@@ -1,0 +1,110 @@
+<m-container>
+
+  <m-main-menu
+    [menuitems]="['My Profile', 'My Reports', 'Weekly Digest']"
+    (menuclick)="onMenuClick($event)">
+  </m-main-menu>
+
+  <!-- MY PROFILE TAB  -->
+  @if (activeTab === 'My Profile') {
+
+    <h3>My Profile</h3>
+
+    @if (profile) {
+      <div class="profile-card">
+        <div class="profile-avatar">{{ nameInitials }}</div>
+        <div class="profile-info">
+          <h2>{{ profile.displayName }}</h2>
+          <p>{{ profile.email }}</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+
+        <div class="stat-card">
+          <strong>{{ profile.contributionScore || 0 }}</strong>
+          <span>Contribution Score</span>
+        </div>
+
+        <div class="stat-card">
+          <strong>{{ profile.totalReports || 0 }}</strong>
+          <span>Total Reports</span>
+        </div>
+
+        <div class="stat-card stat-card-green">
+          <strong>{{ profile.verifiedReports || 0 }}</strong>
+          <span>Verified Reports</span>
+        </div>
+
+        <div class="stat-card">
+          <strong>#{{ userRank }}</strong>
+          <span>Community Rank</span>
+        </div>
+
+      </div>
+
+      <h3>How to Earn Points</h3>
+      <m-table
+        [data]="scoringRules"
+        [columnsToBeDisplayed]="['action', 'points']"
+        [tableHeaders]="['Action', 'Points']"
+        [showCaption]="false">
+      </m-table>
+
+    } @else {
+      <m-aha type="normal" header="Loading Profile…">
+        Fetching your profile data from Firebase.
+      </m-aha>
+    }
+  }
+
+  <!--MY REPORTS TAB -->
+  @if (activeTab === 'My Reports') {
+
+    <h3>My Submitted Reports</h3>
+
+    @if (myReports.length === 0) {
+      <m-aha type="normal" header="No Reports Yet">
+        You haven't submitted any reports. Go to the Report tab to start contributing!
+      </m-aha>
+    } @else {
+      <m-table
+        [data]="myReports"
+        [columnsToBeDisplayed]="['category', 'severity', 'upvotes', 'verified', 'timestamp']"
+        [tableHeaders]="['Category', 'Severity', 'Upvotes', 'Verified', 'Date']"
+        [showCaption]="true"
+        caption="Your Safety Reports">
+      </m-table>
+    }
+  }
+
+  <!-- WEEKLY DIGEST TAB -->
+  @if (activeTab === 'Weekly Digest') {
+
+    <h3>Weekly Neighbourhood Safety Digest</h3>
+    <p>Gemini AI generates a personalised safety summary based on recent reports near your last known location.</p>
+
+    <button
+      class="pure-button"
+      style="background: rgb(238,39,55); color: white;"
+      (click)="generateDigest()"
+      [disabled]="digestLoading">
+      @if (digestLoading) { Gemini is writing your digest… }
+      @else { Generate Weekly Digest }
+    </button>
+
+    @if (digestLoading) {
+      <m-aha type="normal" header="Analysing nearby reports…">
+        Gemini AI is composing your weekly safety update.
+      </m-aha>
+    }
+
+    @if (digest !== '' && !digestLoading) {
+      <m-result-box label="📰 Your Weekly Safety Update" class="success">
+        {{ digest }}
+      </m-result-box>
+    }
+  }
+
+</m-container>
+

@@ -1,0 +1,179 @@
+
+<m-container>
+
+  <m-main-menu
+    [menuitems]="['Live Heatmap', 'Report List', 'Filters']"
+    (menuclick)="onMenuClick($event)">
+  </m-main-menu>
+
+  <!--  LIVE HEATMAP TAB  -->
+  @if (activeTab === 'Live Heatmap') {
+
+    <div class="map-stats-row">
+      <div class="stat-box">
+        <strong>{{ allReports.length }}</strong>
+        <span>Total Reports</span>
+      </div>
+      <div class="stat-box">
+        <strong>{{ verifiedCount }}</strong>
+        <span>Verified</span>
+      </div>
+      <div class="stat-box stat-box-danger">
+        <strong>{{ highCount }}</strong>
+        <span>High Severity</span>
+      </div>
+    </div>
+
+    <google-map
+      height="500px"
+      width="100%"
+      [center]="mapCenter"
+      [zoom]="mapZoom"
+      [options]="mapOptions">
+
+      <!-- Heatmap layer — intensity weighted by severity -->
+      @if (heatmapData.length > 0) {
+        <map-heatmap-layer
+          [data]="heatmapData"
+          [options]="{ radius: 40, opacity: 0.7 }">
+        </map-heatmap-layer>
+      }
+
+      <!-- Individual markers -->
+      @for (r of filteredReports; track r.id) {
+        <map-marker
+          [position]="{ lat: r.lat, lng: r.lng }"
+          [title]="r.category + ' — ' + r.severity"
+          [options]="markerOptions(r)"
+          (mapClick)="onMarkerClick(r)"
+          #marker="mapMarker">
+        </map-marker>
+      }
+
+      <!-- Info window for selected report -->
+      <map-info-window>
+        @if (selectedReport) {
+          <h4>{{ selectedReport.category }}</h4>
+          <p><strong>Severity:</strong> {{ selectedReport.severity }}</p>
+          <p><strong>Description:</strong> {{ selectedReport.description }}</p>
+          @if (selectedReport.verified) {
+            <p style="color: green;"><strong>✓ Community Verified</strong></p>
+          }
+          @if (selectedReport.geminiClassification) {
+            <p><strong>AI Classification:</strong> {{ selectedReport.geminiClassification }}</p>
+            <p><strong>Authority:</strong> {{ selectedReport.geminiAuthority }}</p>
+            <p><strong>Action:</strong> {{ selectedReport.geminiAction }}</p>
+          }
+          <div class="info-votes">
+            <button class="pure-button vote-btn-up" (click)="upvote(selectedReport)">
+               Upvote ({{ selectedReport.upvotes || 0 }})
+            </button>
+            <button class="pure-button vote-btn-down" (click)="dispute(selectedReport)">
+               Dispute ({{ selectedReport.disputes || 0 }})
+            </button>
+          </div>
+        }
+      </map-info-window>
+
+    </google-map>
+
+    @if (voteMessage !== '') {
+      <m-aha [type]="voteMessageType" header="Vote Recorded">
+        {{ voteMessage }}
+      </m-aha>
+    }
+  }
+
+  <!--  REPORT LIST TAB  -->
+  @if (activeTab === 'Report List') {
+
+    <m-search-button (search)="filterTerm = $event"></m-search-button>
+
+    <m-table
+      [data]="filteredReports"
+      [filterTerm]="filterTerm"
+      [columnsToBeDisplayed]="['category', 'severity', 'description', 'upvotes', 'verified']"
+      [tableHeaders]="['Category', 'Severity', 'Description', 'Upvotes', 'Verified']"
+      [showCaption]="true"
+      caption="Live Safety Reports"
+      [showMoreDetails]="true"
+      (moreDetails)="onReportDetails($event)">
+    </m-table>
+
+    <!-- Detail panel for a selected report -->
+    @if (detailReport) {
+      <div class="detail-panel">
+        <h3>Report Detail</h3>
+        <p><strong>Category:</strong> {{ detailReport.category }}</p>
+        <p><strong>Severity:</strong> {{ detailReport.severity }}</p>
+        <p><strong>Description:</strong> {{ detailReport.description }}</p>
+        <p><strong>Date:</strong> {{ detailReport.timestamp | date:'medium' }}</p>
+        <p><strong>Upvotes:</strong> {{ detailReport.upvotes || 0 }}</p>
+        <p><strong>Disputes:</strong> {{ detailReport.disputes || 0 }}</p>
+        @if (detailReport.verified) {
+          <p style="color:green;"><strong>✓ Community Verified</strong></p>
+        }
+        @if (detailReport.geminiClassification) {
+          <h4>AI Analysis (Gemini)</h4>
+          <p><strong>Classification:</strong> {{ detailReport.geminiClassification }}</p>
+          <p><strong>Authority to Notify:</strong> {{ detailReport.geminiAuthority }}</p>
+          <p><strong>Recommended Action:</strong> {{ detailReport.geminiAction }}</p>
+        }
+        <button class="pure-button vote-btn-up" (click)="upvote(detailReport)">
+           Upvote ({{ detailReport.upvotes || 0 }})
+        </button>
+        <button class="pure-button vote-btn-down" (click)="dispute(detailReport)">
+           Dispute ({{ detailReport.disputes || 0 }})
+        </button>
+        <button class="pure-button" (click)="detailReport = null" style="background:rgb(12,35,64);color:white;">
+          Close
+        </button>
+      </div>
+    }
+  }
+
+  <!-- FILTERS TAB  -->
+  @if (activeTab === 'Filters') {
+
+    <div class="filter-form">
+      <h3>Filter Safety Reports</h3>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select class="pure-input-1" [(ngModel)]="filterCategory" (change)="applyFilters()">
+          <option value="">All Categories</option>
+          <option value="Poorly Lit Street">Poorly Lit Street</option>
+          <option value="Damaged Infrastructure">Damaged Infrastructure</option>
+          <option value="Security Concern">Security Concern</option>
+          <option value="Environmental Hazard">Environmental Hazard</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Severity</label>
+        <select class="pure-input-1" [(ngModel)]="filterSeverity" (change)="applyFilters()">
+          <option value="">All Severities</option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Time Range</label>
+        <select class="pure-input-1" [(ngModel)]="filterTime" (change)="applyFilters()">
+          <option value="all">All Time</option>
+          <option value="24h">Last 24 Hours</option>
+          <option value="week">Last Week</option>
+        </select>
+      </div>
+
+      <button class="pure-button" (click)="resetFilters()">Reset Filters</button>
+
+      <m-result-box label="Showing" class="normal">
+        {{ filteredReports.length }} of {{ allReports.length }} reports
+      </m-result-box>
+    </div>
+  }
+
+</m-container>

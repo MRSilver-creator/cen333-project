@@ -1,0 +1,152 @@
+
+<m-container>
+
+  <m-main-menu
+    [menuitems]="['Plan Route', 'Safety Advisory']"
+    (menuclick)="onMenuClick($event)">
+  </m-main-menu>
+
+  <!-- PLAN ROUTE TAB -->
+  @if (activeTab === 'Plan Route') {
+
+    <h3>Safe Route Planner</h3>
+    <p>Enter your destination — the app will check for active hazard reports along the route and warn you before you travel.</p>
+
+    <!-- Location -->
+    <div class="location-box">
+      <strong> Your Current Location</strong>
+      @if (!locationReady) {
+        <p style="color:#888;">Detecting GPS…</p>
+      }
+      @if (locationReady) {
+        <p style="color:green;">{{ lat.toFixed(5) }}, {{ lng.toFixed(5) }}</p>
+      }
+    </div>
+
+    <!-- Destination input -->
+    <form class="pure-form pure-form-stacked">
+      <fieldset>
+        <div class="form-group">
+          <label>Destination Address *</label>
+          <input
+            type="text"
+            class="pure-input-1"
+            [(ngModel)]="destination"
+            name="destination"
+            placeholder="e.g. Khalifa City, Abu Dhabi"
+            (keyup.enter)="checkRoute()" />
+        </div>
+
+        <button
+          type="button"
+          class="pure-button"
+          style="background: rgb(12,35,64); color: white;"
+          (click)="checkRoute()"
+          [disabled]="!locationReady || !destination || checking">
+          @if (checking) { Checking Route… }
+          @else {  Check Route Safety }
+        </button>
+      </fieldset>
+    </form>
+
+    <!-- Map -->
+    @if (locationReady) {
+      <br>
+      <google-map
+        height="450px"
+        width="100%"
+        [center]="mapCenter"
+        [zoom]="mapZoom"
+        [options]="mapOptions">
+
+        <!-- User position marker -->
+        <map-marker
+          [position]="mapCenter"
+          title="Your Position"
+          [options]="{
+            icon: {
+              path: 0,
+              scale: 8,
+              strokeWeight: 1,
+              fillColor: '#FFFFFF',
+              fillOpacity: 1
+            }
+          }">
+        </map-marker>
+
+        <!-- Hazard markers on route -->
+        @for (h of hazardsOnRoute; track h.id) {
+          <map-marker
+            [position]="{ lat: h.lat, lng: h.lng }"
+            [title]="h.category + ' — ' + h.severity"
+            [options]="hazardMarkerOptions(h)">
+          </map-marker>
+        }
+
+        <!-- Route polyline -->
+        @if (routePath.length > 0) {
+          <map-polyline
+            [path]="routePath"
+            [options]="{ strokeWeight: 5, strokeColor: 'rgb(12,35,64)' }">
+          </map-polyline>
+        }
+
+      </google-map>
+    }
+  }
+
+  <!-- SAFETY ADVISORY TAB -->
+  @if (activeTab === 'Safety Advisory') {
+
+    @if (!routeChecked) {
+      <m-aha type="normal" header="No Route Checked Yet">
+        Go to Plan Route tab, enter a destination, and check the route first.
+      </m-aha>
+    }
+
+    @if (routeChecked && hazardsOnRoute.length === 0) {
+      <m-aha type="success" header="Route Looks Safe!">
+        No active hazard reports were detected along your route to {{ destination }}.
+      </m-aha>
+    }
+
+    @if (routeChecked && hazardsOnRoute.length > 0) {
+
+      <m-result-box label=" Hazards Detected" class="warning">
+        {{ hazardsOnRoute.length }} hazard zone(s) found along the route to {{ destination }}.
+      </m-result-box>
+
+      @if (routeAdvisory) {
+        <h3>Gemini AI Safety Advisory</h3>
+
+        <m-result-box label="Route Warning" class="warning">
+          {{ routeAdvisory.advisory }}
+        </m-result-box>
+
+        <m-result-box label="Recommendation" class="normal">
+          {{ routeAdvisory.safeAlternative }}
+        </m-result-box>
+      }
+
+      <h3>Hazards on This Route</h3>
+
+      <m-table
+        [data]="hazardsOnRoute"
+        [columnsToBeDisplayed]="['category', 'severity', 'description']"
+        [tableHeaders]="['Category', 'Severity', 'Description']"
+        [showCaption]="true"
+        caption="Detected Hazard Zones">
+      </m-table>
+
+      <div class="route-actions">
+        <button class="pure-button" style="background:rgb(12,35,64);color:white;width:auto;" (click)="showOriginalRoute()">
+          Continue with Original Route
+        </button>
+        <button class="pure-button" style="background:rgb(238,39,55);color:white;width:auto;" (click)="requestAlternate()">
+          Request Alternate Route
+        </button>
+      </div>
+    }
+  }
+
+</m-container>

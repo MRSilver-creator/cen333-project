@@ -1,0 +1,12 @@
+.location-box {
+  border: 2px solid rgb(12, 35, 64);
+  padding: 1em;
+  margin-bottom: 1.2em;
+  background: #f9f9f9;
+}
+
+.location-box strong {
+  display: block;
+  color: rgb(12, 35, 64);
+  margin-bottom: 0.4em;
+}

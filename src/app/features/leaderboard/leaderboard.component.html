@@ -1,0 +1,28 @@
+<m-container>
+
+  <m-main-menu
+    [menuitems]="['Top Contributors']"
+    (menuclick)="onMenuClick($event)">
+  </m-main-menu>
+
+  @if (activeTab === 'Top Contributors') {
+
+    <h3>Community Leaderboard</h3>
+    <p>Top contributors ranked by their safety reporting score.</p>
+
+    @if (leaderboard.length === 0) {
+      <m-aha type="normal" header="No Data Yet">
+        No contributors found. Start reporting hazards to appear on the leaderboard!
+      </m-aha>
+    } @else {
+      <m-table
+        [data]="leaderboard"
+        [columnsToBeDisplayed]="['rank', 'displayName', 'email', 'contributionScore', 'totalReports']"
+        [tableHeaders]="['Rank', 'Name', 'Email', 'Score', 'Reports']"
+        [showCaption]="true"
+        caption="SafeRoute Community Leaderboard">
+      </m-table>
+    }
+  }
+
+</m-container>

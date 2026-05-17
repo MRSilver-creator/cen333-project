@@ -1,0 +1,75 @@
+<section class="hero">
+  <div class="hero-overlay"></div>
+
+  <div class="topbar">
+    <div class="brand">
+      <span class="brand-safe">SAFE</span><span class="brand-route">ROUTE</span>
+    </div>
+    <nav class="topbar-nav">
+      <a href="#hero"     class="tlink">Home</a>
+      <a href="#about"    class="tlink">About</a>
+      <a href="#features" class="tlink">Features</a>
+      <a href="#Start"  class="tlink">Start</a>
+    </nav>
+    <button class="signin-btn" (click)="goToLogin()">Sign In</button>
+  </div>
+
+  <div class="hero-body" id="hero">
+    <h1 class="hero-h1">
+      Navigate Your City With Confidence
+    </h1>
+    <p class="hero-sub">
+      Real-time hazard reports, AI-powered route analysis, and community
+      verification — keeping you safe on every journey.
+    </p>
+  </div>
+</section>
+
+<section class="about" id="about">
+  <p class="section-tag">About the Application</p>
+  <h2 class="section-h2">What is SafeRoute?</h2>
+  <p class="section-sub">
+    SafeRoute is a community-driven safety platform that combines crowdsourced hazard
+    reporting with Gemini AI intelligence and Google Maps to help citizens navigate
+    their city safely — day or night.
+  </p>
+
+  <div class="cards" id="features">
+    <div class="card">
+      <h3>GPS-Accurate Reporting</h3>
+      <p>Submit hazard reports pinned to your exact GPS location with a single tap. Coordinates are captured automatically.</p>
+    </div>
+    <div class="card">
+      <h3>Gemini AI Classification</h3>
+      <p>Every report is instantly analysed by Gemini AI — classifying the hazard and routing it to the right authority.</p>
+    </div>
+    <div class="card">
+      <h3>Live Safety Heatmap</h3>
+      <p>See all community reports overlaid on a live Google Maps heatmap. High-severity zones glow red.</p>
+    </div>
+    <div class="card">
+      <h3>Safe Route Planner</h3>
+      <p>Enter your destination — SafeRoute checks for active hazards along the way and offers AI safety advisories.</p>
+    </div>
+    <div class="card">
+      <h3>Community Verification</h3>
+      <p>Upvote accurate reports and dispute false ones. Reports with 3+ upvotes are marked verified.</p>
+    </div>
+    <div class="card">
+      <h3>Contribution Leaderboard</h3>
+      <p>Earn points for every report, verification, and upvote. Rise through the community leaderboard.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="start" id="Start">
+  <h2>Ready to make your city safer?</h2>
+  <p>Join the SafeRoute community. Sign up in 30 seconds and start reporting.</p>
+  <button class="btn-red btn-lg" (click)="goToLogin()">Login &nbsp;/&nbsp; Sign Up &nbsp;→</button>
+</section>
+
+<footer class="home-footer">
+  <span class="brand"><span class="brand-safe">SAFE</span><span class="brand-route">ROUTE</span></span>
+  <p>Designed by Menatallah Naeim &amp; Wassim Habashi &amp; Ahmed Hemada &nbsp;·&nbsp; CEN333</p>
+</footer>
